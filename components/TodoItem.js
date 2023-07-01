@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-function TodoItem({id, text, done, onToggle, onRemove}) {
+function TodoItem({id, text, done, onToggle, onRemove, removeTodo}) {
   const remove = () => {
     Alert.alert(
       '삭제',
@@ -20,6 +20,7 @@ function TodoItem({id, text, done, onToggle, onRemove}) {
           text: '삭제',
           onPress: () => {
             onRemove(id);
+            removeTodo(id);
           },
           style: 'destructive',
         },

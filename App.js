@@ -7,7 +7,7 @@ import Empty from './components/Empty';
 import TodoList from './components/TodoList';
 import todosStorage from './storages/todosStorage';
 import {v4 as uuidv4} from 'uuid';
-import {createTodo} from './lib/todos';
+import {createTodo, removeTodo} from './lib/todos';
 
 const App = () => {
   const today = new Date();
@@ -21,12 +21,11 @@ const App = () => {
       done: false,
     };
 
-    setTodos(todos.concat(todo));
-    createTodo(todo);
-    // .then(() => {
-    //   setTodos(todos.concat(todo));
-    // })
-    // .catch(console.error);
+    createTodo(todo)
+      .then(() => {
+        setTodos(todos.concat(todo));
+      })
+      .catch(console.error);
     console.log(todos);
   };
 
@@ -52,7 +51,12 @@ const App = () => {
           {todos.length === 0 ? (
             <Empty />
           ) : (
-            <TodoList todos={todos} onToggle={onToggle} onRemove={onRemove} />
+            <TodoList
+              todos={todos}
+              onToggle={onToggle}
+              onRemove={onRemove}
+              removeTodo={removeTodo}
+            />
           )}
           <AddTodo onInsert={onInsert} />
         </KeyboardAvoidingView>
