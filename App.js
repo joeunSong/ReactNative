@@ -7,12 +7,19 @@ import Empty from './components/Empty';
 import TodoList from './components/TodoList';
 import todosStorage from './storages/todosStorage';
 import {v4 as uuidv4} from 'uuid';
-import {createTodo, removeTodo} from './lib/todos';
+import {createTodo, getTodos, removeTodo, toggleTodo} from './lib/todos';
 
 const App = () => {
   const today = new Date();
 
   const [todos, setTodos] = useState([]);
+  useEffect(() => {
+    const fn = async () => {
+      const todoData = await getTodos();
+      setTodos(todoData);
+    };
+    fn();
+  });
 
   const onInsert = text => {
     const todo = {
@@ -21,24 +28,21 @@ const App = () => {
       done: false,
     };
 
-    createTodo(todo)
-      .then(() => {
-        setTodos(todos.concat(todo));
-      })
-      .catch(console.error);
-    console.log(todos);
+    createTodo(todo);
   };
 
   const onToggle = id => {
-    const nextTodos = todos.map(todo =>
-      todo.id === id ? {...todo, done: !todo.done} : todo,
-    );
-    setTodos(nextTodos);
+    let data = {};
+    todos.map(todo => {
+      if (todo.id === id) {
+        data = {...todo, done: !todo.done};
+      }
+    });
+    toggleTodo(data);
   };
 
   const onRemove = id => {
-    const nextTodos = todos.filter(todo => todo.id !== id);
-    setTodos(nextTodos);
+    removeTodo(id);
   };
 
   return (
@@ -48,15 +52,10 @@ const App = () => {
           behavior={Platform.select({ios: 'padding'})}
           style={styles.avoid}>
           <DateHead date={today} />
-          {todos.length === 0 ? (
+          {todos.length == 0 ? (
             <Empty />
           ) : (
-            <TodoList
-              todos={todos}
-              onToggle={onToggle}
-              onRemove={onRemove}
-              removeTodo={removeTodo}
-            />
+            <TodoList todos={todos} onToggle={onToggle} onRemove={onRemove} />
           )}
           <AddTodo onInsert={onInsert} />
         </KeyboardAvoidingView>
